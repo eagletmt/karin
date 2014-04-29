@@ -1,6 +1,7 @@
 package cc.wanko.karin.app.activities;
 
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ListView;
@@ -22,6 +23,8 @@ import twitter4j.Twitter;
 
 public class MainActivity extends RoboFragmentActivity {
 
+    @InjectView(R.id.swipe_refresh_home_timeline)
+    private SwipeRefreshLayout swipeRefreshHomeTimeline;
     @InjectView(R.id.home_timeline_list)
     private ListView homeTimelineList;
 
@@ -40,6 +43,13 @@ public class MainActivity extends RoboFragmentActivity {
 
         statusListAdapter = new StatusListAdapter(this);
         homeTimelineList.setAdapter(statusListAdapter);
+
+        swipeRefreshHomeTimeline.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                retrieveHomeTimeline();
+            }
+        });
 
         twitter = TwitterProvider.get(this);
         retrieveHomeTimeline();
@@ -73,6 +83,9 @@ public class MainActivity extends RoboFragmentActivity {
     private static final int PAGE_COUNT = 100;
 
     private void retrieveHomeTimeline() {
+        swipeRefreshHomeTimeline.setEnabled(false);
+        swipeRefreshHomeTimeline.setRefreshing(true);
+
         new RoboAsyncTask<ResponseList<Status>>(this) {
             @Override
             public ResponseList<Status> call() throws Exception {
@@ -93,6 +106,12 @@ public class MainActivity extends RoboFragmentActivity {
             @Override
             protected void onException(Exception e) throws RuntimeException {
                 reportException("Cannot get home timeline", e);
+            }
+
+            @Override
+            protected void onFinally() throws RuntimeException {
+                swipeRefreshHomeTimeline.setEnabled(true);
+                swipeRefreshHomeTimeline.setRefreshing(false);
             }
         }.execute();
     }
