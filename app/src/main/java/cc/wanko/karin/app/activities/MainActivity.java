@@ -1,9 +1,11 @@
-package cc.wanko.karin.app;
+package cc.wanko.karin.app.activities;
 
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+
+import cc.wanko.karin.app.R;
 
 
 public class MainActivity extends ActionBarActivity {
