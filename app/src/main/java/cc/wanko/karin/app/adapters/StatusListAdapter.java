@@ -22,10 +22,12 @@ import twitter4j.User;
 public class StatusListAdapter extends ArrayAdapter<Status> {
     private static class ViewHolder {
         final ImageView userIcon;
+        final TextView userName;
         final TextView statusText;
 
         public ViewHolder(View root) {
             userIcon = (ImageView) root.findViewById(R.id.status_user_icon);
+            userName = (TextView) root.findViewById(R.id.status_user_name);
             statusText = (TextView) root.findViewById(R.id.status_text);
         }
     }
@@ -52,6 +54,7 @@ public class StatusListAdapter extends ArrayAdapter<Status> {
         User user = status.getUser();
 
         holder.statusText.setText(status.getText());
+        holder.userName.setText(user.getScreenName());
 
         ImageLoader.ImageContainer container = (ImageLoader.ImageContainer) holder.userIcon.getTag();
         if (container != null) {
