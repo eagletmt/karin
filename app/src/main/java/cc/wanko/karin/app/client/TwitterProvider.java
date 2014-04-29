@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import cc.wanko.karin.app.R;
+import roboguice.util.Ln;
 import twitter4j.Twitter;
 import twitter4j.TwitterFactory;
 import twitter4j.auth.AccessToken;
@@ -20,12 +21,17 @@ public class TwitterProvider {
         String consumerKey = context.getString(R.string.twitter_consumer_key);
         String consumerSecret = context.getString(R.string.twitter_consumer_secret);
         Twitter twitter = new TwitterFactory().getInstance();
+        Ln.d("Set twitter consumer_key=" + consumerKey + ", consumer_secret=" + consumerSecret);
         twitter.setOAuthConsumer(consumerKey, consumerSecret);
         AccessToken accessToken = loadAccessToken(context);
         if (accessToken != null) {
             twitter.setOAuthAccessToken(accessToken);
         }
         return twitter;
+    }
+
+    public static boolean hasAccessToken(Context context) {
+        return loadAccessToken(context) != null;
     }
 
     private static AccessToken loadAccessToken(Context context) {
