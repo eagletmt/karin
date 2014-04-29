@@ -13,6 +13,7 @@ import roboguice.activity.RoboFragmentActivity;
 import roboguice.inject.InjectView;
 import roboguice.util.Ln;
 import roboguice.util.RoboAsyncTask;
+import twitter4j.Paging;
 import twitter4j.RateLimitStatus;
 import twitter4j.ResponseList;
 import twitter4j.Status;
@@ -69,11 +70,14 @@ public class MainActivity extends RoboFragmentActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    private static final int PAGE_COUNT = 100;
+
     private void retrieveHomeTimeline() {
         new RoboAsyncTask<ResponseList<Status>>(this) {
             @Override
             public ResponseList<Status> call() throws Exception {
-                return twitter.getHomeTimeline();
+                Paging paging = new Paging(1, PAGE_COUNT);
+                return twitter.getHomeTimeline(paging);
             }
 
             @Override
