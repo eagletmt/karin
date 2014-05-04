@@ -7,19 +7,24 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import cc.wanko.karin.app.R;
+import cc.wanko.karin.app.utils.RoboViewHolder;
+import roboguice.inject.InjectView;
 import twitter4j.UserList;
 
 /**
  * Created by eagletmt on 14/05/05.
  */
 public class UserListListAdapter extends ArrayAdapter<UserList> {
-    private static class ViewHolder {
-        public final TextView name, description, info;
+    private static class ViewHolder extends RoboViewHolder {
+        @InjectView(R.id.user_list_name)
+        TextView name;
+        @InjectView(R.id.user_list_description)
+        TextView description;
+        @InjectView(R.id.user_list_info)
+        TextView info;
 
         public ViewHolder(View root) {
-            this.name = (TextView) root.findViewById(R.id.user_list_name);
-            this.description = (TextView) root.findViewById(R.id.user_list_description);
-            this.info = (TextView) root.findViewById(R.id.user_list_info);
+            super(root);
         }
     }
 

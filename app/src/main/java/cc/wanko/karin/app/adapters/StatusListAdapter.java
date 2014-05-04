@@ -11,8 +11,13 @@ import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.Volley;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+
 import cc.wanko.karin.app.R;
 import cc.wanko.karin.app.utils.LruImageCache;
+import cc.wanko.karin.app.utils.RoboViewHolder;
+import roboguice.inject.InjectView;
 import twitter4j.Status;
 import twitter4j.User;
 
@@ -20,15 +25,16 @@ import twitter4j.User;
  * Created by eagletmt on 14/04/29.
  */
 public class StatusListAdapter extends ArrayAdapter<Status> {
-    private static class ViewHolder {
-        final ImageView userIcon;
-        final TextView userName;
-        final TextView statusText;
+    private static class ViewHolder extends RoboViewHolder {
+        @InjectView(R.id.status_user_icon)
+        ImageView userIcon;
+        @InjectView(R.id.status_user_name)
+        TextView userName;
+        @InjectView(R.id.status_text)
+        TextView statusText;
 
         public ViewHolder(View root) {
-            userIcon = (ImageView) root.findViewById(R.id.status_user_icon);
-            userName = (TextView) root.findViewById(R.id.status_user_name);
-            statusText = (TextView) root.findViewById(R.id.status_text);
+            super(root);
         }
     }
 
