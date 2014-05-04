@@ -32,7 +32,7 @@ public class MainPagerAdapter extends FragmentPagerAdapter {
     }
 
     private static final String[] PAGE_TITLES = {
-            "Home Timelin",
+            "Home Timeline",
             "Lists",
     };
 
