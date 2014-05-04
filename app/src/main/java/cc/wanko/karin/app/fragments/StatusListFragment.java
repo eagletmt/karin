@@ -33,11 +33,6 @@ public class StatusListFragment extends RoboFragment {
 
     private StatusSource statusSource;
 
-    public StatusListFragment(StatusSource statusSource) {
-        super();
-        this.statusSource = statusSource;
-    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_status_list, container, false);
@@ -57,12 +52,18 @@ public class StatusListFragment extends RoboFragment {
             }
         });
 
-        retrieveStatuses();
+        if (statusSource != null) {
+            retrieveStatuses();
+        }
+    }
+
+    public void setStatusSource(StatusSource statusSource) {
+        this.statusSource = statusSource;
     }
 
     private static final int PAGE_COUNT = 100;
 
-    private void retrieveStatuses() {
+    public void retrieveStatuses() {
         swipeRefresh.setEnabled(false);
         swipeRefresh.setRefreshing(true);
 

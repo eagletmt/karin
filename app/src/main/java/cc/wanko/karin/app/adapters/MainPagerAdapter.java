@@ -23,7 +23,9 @@ public class MainPagerAdapter extends FragmentPagerAdapter {
     public Fragment getItem(int position) {
         switch (position) {
             case 0:
-                return new StatusListFragment(new HomeTimelineSource(activity));
+                StatusListFragment fragment = new StatusListFragment();
+                fragment.setStatusSource(new HomeTimelineSource(activity));
+                return fragment;
             case 1:
                 return new UserListListFragment();
         }
