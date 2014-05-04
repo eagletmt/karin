@@ -1,18 +1,20 @@
 package cc.wanko.karin.app.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import cc.wanko.karin.app.R;
+import cc.wanko.karin.app.activities.UserListActivity;
 import cc.wanko.karin.app.adapters.UserListListAdapter;
 import cc.wanko.karin.app.client.TwitterProvider;
 import roboguice.fragment.RoboFragment;
 import roboguice.inject.InjectView;
-import roboguice.util.Ln;
 import roboguice.util.RoboAsyncTask;
 import twitter4j.ResponseList;
 import twitter4j.Twitter;
@@ -40,13 +42,22 @@ public class UserListListFragment extends RoboFragment {
 
         adapter = new UserListListAdapter(getActivity());
         userListList.setAdapter(adapter);
+        userListList.setOnItemClickListener(
+                new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+                        UserList list = adapter.getItem(position);
+                        Intent intent = UserListActivity.createIntent(getActivity(), list);
+                        startActivity(intent);
+                    }
+                }
+        );
 
         twitter = TwitterProvider.get(getActivity());
         retrieveUserLists();
     }
 
     private void retrieveUserLists() {
-        Ln.d("retrieve user lists");
         new RoboAsyncTask<ResponseList<UserList>>(getActivity()) {
             @Override
             public ResponseList<UserList> call() throws Exception {
