@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.TextView;
 
 import cc.wanko.karin.app.R;
 import cc.wanko.karin.app.client.StatusSource;
@@ -13,15 +12,13 @@ import cc.wanko.karin.app.client.UserListSource;
 import cc.wanko.karin.app.fragments.StatusListFragment;
 import roboguice.activity.RoboActionBarActivity;
 import roboguice.inject.InjectFragment;
-import roboguice.inject.InjectView;
 import twitter4j.UserList;
 
 public class UserListActivity extends RoboActionBarActivity {
 
+    private static final String ARGS_LIST_NAME = "list_name";
     private static final String ARGS_LIST_ID = "list_id";
 
-    @InjectView(R.id.user_list_name)
-    private TextView userListName;
     @InjectFragment(R.id.user_list_statuses)
     private StatusListFragment statusListFragment;
 
@@ -33,6 +30,7 @@ public class UserListActivity extends RoboActionBarActivity {
         setContentView(R.layout.activity_user_list);
 
         Intent intent = getIntent();
+        getSupportActionBar().setTitle(intent.getStringExtra(ARGS_LIST_NAME));
         statusSource = new UserListSource(this, intent.getLongExtra(ARGS_LIST_ID, -1));
 
         statusListFragment.setStatusSource(statusSource);
@@ -60,6 +58,7 @@ public class UserListActivity extends RoboActionBarActivity {
 
     public static Intent createIntent(Context context, UserList list) {
         Intent intent = new Intent(context, UserListActivity.class);
+        intent.putExtra(ARGS_LIST_NAME, list.getFullName());
         intent.putExtra(ARGS_LIST_ID, list.getId());
         return intent;
     }

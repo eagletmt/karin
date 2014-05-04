@@ -9,11 +9,6 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="cc.wanko.karin.app.activities.UserListActivity">
 
-    <TextView
-        android:id="@+id/user_list_name"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
     <fragment
         android:id="@+id/user_list_statuses"
         android:name="cc.wanko.karin.app.fragments.StatusListFragment"
