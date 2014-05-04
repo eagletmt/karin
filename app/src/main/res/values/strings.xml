@@ -6,5 +6,6 @@
     <string name="action_settings">Settings</string>
     <string name="title_activity_oauth">OAuthActivity</string>
     <string name="twitter_callback_url">karin://twitter</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>
