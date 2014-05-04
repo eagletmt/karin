@@ -10,7 +10,7 @@ import android.widget.Toast;
 
 import cc.wanko.karin.app.R;
 import cc.wanko.karin.app.adapters.StatusListAdapter;
-import cc.wanko.karin.app.client.TwitterProvider;
+import cc.wanko.karin.app.client.StatusSource;
 import roboguice.fragment.RoboFragment;
 import roboguice.inject.InjectView;
 import roboguice.util.Ln;
@@ -19,24 +19,28 @@ import twitter4j.Paging;
 import twitter4j.RateLimitStatus;
 import twitter4j.ResponseList;
 import twitter4j.Status;
-import twitter4j.Twitter;
 
 /**
- * Created by eagletmt on 14/05/04.
+ * Created by eagletmt on 14/05/05.
  */
-public class HomeTimelineFragment extends RoboFragment {
-    @InjectView(R.id.swipe_refresh_home_timeline)
-    private SwipeRefreshLayout swipeRefreshHomeTimeline;
-    @InjectView(R.id.home_timeline_list)
-    private ListView homeTimelineList;
+public class StatusListFragment extends RoboFragment {
+    @InjectView(R.id.swipe_refresh)
+    private SwipeRefreshLayout swipeRefresh;
+    @InjectView(R.id.status_list)
+    private ListView statusList;
 
     private StatusListAdapter statusListAdapter;
 
-    private Twitter twitter;
+    private StatusSource statusSource;
+
+    public StatusListFragment(StatusSource statusSource) {
+        super();
+        this.statusSource = statusSource;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_home_timeline, container, false);
+        return inflater.inflate(R.layout.fragment_status_list, container, false);
     }
 
     @Override
@@ -44,30 +48,29 @@ public class HomeTimelineFragment extends RoboFragment {
         super.onViewCreated(view, savedInstanceState);
 
         statusListAdapter = new StatusListAdapter(getActivity());
-        homeTimelineList.setAdapter(statusListAdapter);
+        statusList.setAdapter(statusListAdapter);
 
-        swipeRefreshHomeTimeline.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+        swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                retrieveHomeTimeline();
+                retrieveStatuses();
             }
         });
 
-        twitter = TwitterProvider.get(getActivity());
-        retrieveHomeTimeline();
+        retrieveStatuses();
     }
 
     private static final int PAGE_COUNT = 100;
 
-    private void retrieveHomeTimeline() {
-        swipeRefreshHomeTimeline.setEnabled(false);
-        swipeRefreshHomeTimeline.setRefreshing(true);
+    private void retrieveStatuses() {
+        swipeRefresh.setEnabled(false);
+        swipeRefresh.setRefreshing(true);
 
         new RoboAsyncTask<ResponseList<Status>>(getActivity()) {
             @Override
             public ResponseList<Status> call() throws Exception {
                 Paging paging = new Paging(1, PAGE_COUNT);
-                return twitter.getHomeTimeline(paging);
+                return statusSource.getStatuses(paging);
             }
 
             @Override
@@ -87,8 +90,8 @@ public class HomeTimelineFragment extends RoboFragment {
 
             @Override
             protected void onFinally() throws RuntimeException {
-                swipeRefreshHomeTimeline.setEnabled(true);
-                swipeRefreshHomeTimeline.setRefreshing(false);
+                swipeRefresh.setEnabled(true);
+                swipeRefresh.setRefreshing(false);
             }
         }.execute();
     }

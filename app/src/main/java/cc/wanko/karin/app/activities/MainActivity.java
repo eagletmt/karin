@@ -31,7 +31,7 @@ public class MainActivity extends RoboActionBarActivity {
         final ActionBar actionBar = getSupportActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
-        pagerAdapter = new MainPagerAdapter(getSupportFragmentManager());
+        pagerAdapter = new MainPagerAdapter(this);
         viewPager.setAdapter(pagerAdapter);
         viewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
