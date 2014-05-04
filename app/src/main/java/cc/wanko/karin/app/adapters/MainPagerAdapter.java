@@ -5,6 +5,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
 import cc.wanko.karin.app.fragments.HomeTimelineFragment;
+import cc.wanko.karin.app.fragments.UserListListFragment;
 
 /**
  * Created by eagletmt on 14/05/05.
@@ -16,6 +17,12 @@ public class MainPagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
+        switch (position) {
+            case 0:
+                return new HomeTimelineFragment();
+            case 1:
+                return new UserListListFragment();
+        }
         return new HomeTimelineFragment();
     }
 
@@ -24,8 +31,13 @@ public class MainPagerAdapter extends FragmentPagerAdapter {
         return 2;
     }
 
+    private static final String[] PAGE_TITLES = {
+            "Home Timelin",
+            "Lists",
+    };
+
     @Override
     public CharSequence getPageTitle(int position) {
-        return "HOME Timeline " + position;
+        return PAGE_TITLES[position];
     }
 }
