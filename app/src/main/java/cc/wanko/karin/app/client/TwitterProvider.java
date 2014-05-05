@@ -18,15 +18,20 @@ public class TwitterProvider {
     private static final String PREF_TOKEN_SECRET = "access-token-secret";
 
     public static Twitter get(Context context) {
+        Twitter twitter = newInstance(context);
+        AccessToken accessToken = loadAccessToken(context);
+        if (accessToken != null) {
+            twitter.setOAuthAccessToken(accessToken);
+        }
+        return twitter;
+    }
+
+    public static Twitter newInstance(Context context) {
         String consumerKey = context.getString(R.string.twitter_consumer_key);
         String consumerSecret = context.getString(R.string.twitter_consumer_secret);
         Twitter twitter = new TwitterFactory().getInstance();
         Ln.d("Set twitter consumer_key=" + consumerKey + ", consumer_secret=" + consumerSecret);
         twitter.setOAuthConsumer(consumerKey, consumerSecret);
-        AccessToken accessToken = loadAccessToken(context);
-        if (accessToken != null) {
-            twitter.setOAuthAccessToken(accessToken);
-        }
         return twitter;
     }
 

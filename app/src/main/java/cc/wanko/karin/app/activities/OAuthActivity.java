@@ -43,15 +43,10 @@ public class OAuthActivity extends RoboFragmentActivity {
         authorizeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                twitter = TwitterProvider.newInstance(getBaseContext());
                 startAuthorization();
             }
         });
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        twitter = TwitterProvider.get(this);
     }
 
     @Override
