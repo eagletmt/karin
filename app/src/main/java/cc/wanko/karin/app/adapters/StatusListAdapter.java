@@ -1,6 +1,8 @@
 package cc.wanko.karin.app.adapters;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.text.method.LinkMovementMethod;
 import android.view.View;
 import android.view.ViewGroup;
@@ -82,10 +84,10 @@ public class StatusListAdapter extends ArrayAdapter<Status> {
     }
 
     private static class StatusButtonTag {
-        final long statusId;
+        final int position;
 
-        public StatusButtonTag(Status status) {
-            this.statusId = status.getId();
+        public StatusButtonTag(int position) {
+            this.position = position;
         }
     }
 
@@ -151,17 +153,18 @@ public class StatusListAdapter extends ArrayAdapter<Status> {
         holder.userIcon.setTag(new UserIconTag(container, user));
 
         holder.favoriteButton.setChecked(status.isFavorited());
-        holder.favoriteButton.setTag(new StatusButtonTag(status));
+        holder.favoriteButton.setTag(new StatusButtonTag(position));
         holder.favoriteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 ToggleButton button = (ToggleButton) view;
                 StatusButtonTag tag = (StatusButtonTag) button.getTag();
+                final Status status = getItem(tag.position);
 
                 if (button.isChecked()) {
-                    createFavorite(button, tag.statusId);
+                    createFavorite(button, status.getId());
                 } else {
-                    destroyFavorite(button, tag.statusId);
+                    destroyFavorite(button, status.getId());
                 }
             }
         });
@@ -171,28 +174,56 @@ public class StatusListAdapter extends ArrayAdapter<Status> {
         } else {
             holder.retweetButton.setEnabled(true);
             holder.retweetButton.setChecked(status.isRetweeted());
-            holder.retweetButton.setTag(new StatusButtonTag(status));
+            holder.retweetButton.setTag(new StatusButtonTag(position));
             holder.retweetButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    ToggleButton button = (ToggleButton) view;
+                    final ToggleButton button = (ToggleButton) view;
                     StatusButtonTag tag = (StatusButtonTag) button.getTag();
+                    final Status status = getItem(tag.position);
 
                     if (button.isChecked()) {
-                        retweetStatus(button, tag.statusId);
+                        confirm("Retweet", "RT @" + status.getUser().getScreenName() + ": " + status.getText(),
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int which) {
+                                        switch (which) {
+                                            case DialogInterface.BUTTON_POSITIVE:
+                                                retweetStatus(button, status.getId());
+                                            case DialogInterface.BUTTON_NEGATIVE:
+                                                button.setChecked(false);
+                                        }
+
+                                    }
+                                }
+                        );
                     }
                 }
             });
         }
 
-        // Set original status for undoing retweets.
-        holder.destroyButton.setTag(new StatusButtonTag(getItem(position)));
+        holder.destroyButton.setTag(new StatusButtonTag(position));
         holder.destroyButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ToggleButton button = (ToggleButton) view;
+                final ToggleButton button = (ToggleButton) view;
                 StatusButtonTag tag = (StatusButtonTag) button.getTag();
-                destroyStatus(button, tag.statusId);
+                final Status status = getItem(tag.position);
+
+                confirm("Destroy", status.getText(),
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int which) {
+                                switch (which) {
+                                    case DialogInterface.BUTTON_POSITIVE:
+                                        destroyStatus(button, status.getId());
+                                    case DialogInterface.BUTTON_NEGATIVE:
+                                        button.setChecked(false);
+                                }
+
+                            }
+                        }
+                );
             }
         });
 
@@ -296,5 +327,15 @@ public class StatusListAdapter extends ArrayAdapter<Status> {
         Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
         Ln.e(message);
         e.printStackTrace();
+    }
+
+    private void confirm(String title, String message, DialogInterface.OnClickListener listener) {
+        new AlertDialog.Builder(getContext())
+                .setTitle(title)
+                .setMessage(message)
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .setPositiveButton(android.R.string.yes, listener)
+                .setNegativeButton(android.R.string.no, listener)
+                .show();
     }
 }
