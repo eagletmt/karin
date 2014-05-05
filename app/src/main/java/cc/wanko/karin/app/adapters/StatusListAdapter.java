@@ -384,7 +384,7 @@ public class StatusListAdapter extends ArrayAdapter<Status> {
         Collections.sort(segments, new Comparator<Segment>() {
             @Override
             public int compare(Segment s1, Segment s2) {
-                return Integer.compare(s1.start, s2.start);
+                return s1.start - s2.start;
             }
         });
 
