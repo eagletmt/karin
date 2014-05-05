@@ -8,6 +8,8 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import java.util.Collections;
+
 import cc.wanko.karin.app.R;
 import cc.wanko.karin.app.adapters.StatusListAdapter;
 import cc.wanko.karin.app.client.StatusSource;
@@ -48,7 +50,12 @@ public class StatusListFragment extends RoboFragment {
         swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                retrieveStatuses();
+                if (statusListAdapter.isEmpty()) {
+                    retrieveStatuses();
+                } else {
+                    Status status = statusListAdapter.getItem(0);
+                    retrieveStatuses(new Paging(1, PAGE_COUNT, status.getId()));
+                }
             }
         });
 
@@ -64,13 +71,16 @@ public class StatusListFragment extends RoboFragment {
     private static final int PAGE_COUNT = 100;
 
     public void retrieveStatuses() {
+        retrieveStatuses(new Paging(1, PAGE_COUNT));
+    }
+
+    public void retrieveStatuses(final Paging paging) {
         swipeRefresh.setEnabled(false);
         swipeRefresh.setRefreshing(true);
 
         new RoboAsyncTask<ResponseList<Status>>(getActivity()) {
             @Override
             public ResponseList<Status> call() throws Exception {
-                Paging paging = new Paging(1, PAGE_COUNT);
                 return statusSource.getStatuses(paging);
             }
 
@@ -78,9 +88,15 @@ public class StatusListFragment extends RoboFragment {
             protected void onSuccess(ResponseList<Status> statuses) throws Exception {
                 RateLimitStatus limit = statuses.getRateLimitStatus();
                 Ln.d("access level=" + statuses.getAccessLevel() + ", rate limit=" + limit.getRemaining() + "/" + limit.getLimit());
-                statusListAdapter.clear();
+
+                boolean isFirstFetch = statusListAdapter.isEmpty();
+                int position = statusList.getFirstVisiblePosition();
+                Collections.reverse(statuses);
                 for (Status status : statuses) {
-                    statusListAdapter.add(status);
+                    statusListAdapter.insert(status, 0);
+                }
+                if (!isFirstFetch) {
+                    statusList.setSelection(position + statuses.size());
                 }
             }
 
