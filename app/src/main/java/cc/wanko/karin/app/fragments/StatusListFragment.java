@@ -17,10 +17,12 @@ import roboguice.fragment.RoboFragment;
 import roboguice.inject.InjectView;
 import roboguice.util.Ln;
 import roboguice.util.RoboAsyncTask;
+import twitter4j.HttpResponseCode;
 import twitter4j.Paging;
 import twitter4j.RateLimitStatus;
 import twitter4j.ResponseList;
 import twitter4j.Status;
+import twitter4j.TwitterException;
 
 /**
  * Created by eagletmt on 14/05/05.
@@ -115,6 +117,17 @@ public class StatusListFragment extends RoboFragment {
     }
 
     private void reportException(String message, Exception e) {
+        if (e instanceof TwitterException) {
+            TwitterException te = (TwitterException) e;
+            if (te.getStatusCode() == HttpResponseCode.TOO_MANY_REQUESTS) {
+                String msg = "Rate limit exceeded.";
+                if (te.getRetryAfter() != -1) {
+                    msg += " Retry after " + te.getRetryAfter() + " seconds!";
+                }
+                Toast.makeText(getActivity(), msg, Toast.LENGTH_LONG).show();
+                return;
+            }
+        }
         Toast.makeText(getActivity(), message + ": " + e.getClass() + ": " + e.getMessage(), Toast.LENGTH_LONG).show();
         e.printStackTrace();
     }
