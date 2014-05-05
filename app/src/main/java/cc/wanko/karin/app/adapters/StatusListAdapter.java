@@ -6,14 +6,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.Volley;
-
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 
 import cc.wanko.karin.app.R;
 import cc.wanko.karin.app.activities.UserStatusesActivity;
@@ -34,6 +32,10 @@ public class StatusListAdapter extends ArrayAdapter<Status> {
         TextView userName;
         @InjectView(R.id.status_text)
         TextView statusText;
+        @InjectView(R.id.status_retweeter_area)
+        LinearLayout retweeterArea;
+        @InjectView(R.id.status_retweeter_name)
+        TextView retweeterName;
 
         public ViewHolder(View root) {
             super(root);
@@ -68,10 +70,18 @@ public class StatusListAdapter extends ArrayAdapter<Status> {
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
-        Status status = getItem(position);
-        User user = status.getUser();
 
+        Status status = getItem(position);
+        Status retweet = status.getRetweetedStatus();
+        if (retweet == null) {
+            setLayoutHeight(holder.retweeterArea, 0);
+        } else {
+            holder.retweeterName.setText("@" + status.getUser().getScreenName());
+            setLayoutHeight(holder.retweeterArea, ViewGroup.LayoutParams.WRAP_CONTENT);
+            status = retweet;
+        }
         holder.statusText.setText(status.getText());
+        User user = status.getUser();
         holder.userName.setText(user.getScreenName());
 
         holder.userIcon.setOnClickListener(new View.OnClickListener() {
@@ -93,5 +103,11 @@ public class StatusListAdapter extends ArrayAdapter<Status> {
         holder.userIcon.setTag(new UserIconTag(container, position));
 
         return convertView;
+    }
+
+    private static void setLayoutHeight(View view, int height) {
+        ViewGroup.LayoutParams params = view.getLayoutParams();
+        params.height = height;
+        view.setLayoutParams(params);
     }
 }
