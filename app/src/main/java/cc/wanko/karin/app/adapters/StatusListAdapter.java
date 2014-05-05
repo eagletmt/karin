@@ -28,6 +28,7 @@ import cc.wanko.karin.app.activities.UserStatusesActivity;
 import cc.wanko.karin.app.utils.LruImageCache;
 import cc.wanko.karin.app.utils.RoboViewHolder;
 import roboguice.inject.InjectView;
+import twitter4j.MediaEntity;
 import twitter4j.Status;
 import twitter4j.URLEntity;
 import twitter4j.User;
@@ -138,13 +139,16 @@ public class StatusListAdapter extends ArrayAdapter<Status> {
     }
 
     private static class UrlSegment extends Segment {
-        public UrlSegment(int start, int end, String text) {
-            super(start, end, text);
+        private URLEntity entity;
+
+        public UrlSegment(URLEntity entity) {
+            super(entity.getStart(), entity.getEnd(), entity.getExpandedURL());
+            this.entity = entity;
         }
 
         @Override
         public void onClick(Context context) {
-            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(text));
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(entity.getExpandedURL()));
             context.startActivity(intent);
         }
     }
@@ -152,8 +156,8 @@ public class StatusListAdapter extends ArrayAdapter<Status> {
     private static class MentionSegment extends Segment {
         private UserMentionEntity entity;
 
-        public MentionSegment(int start, int end, UserMentionEntity entity) {
-            super(start, end, "@" + entity.getScreenName());
+        public MentionSegment(UserMentionEntity entity) {
+            super(entity.getStart(), entity.getEnd(), "@" + entity.getScreenName());
             this.entity = entity;
         }
 
@@ -164,15 +168,33 @@ public class StatusListAdapter extends ArrayAdapter<Status> {
         }
     }
 
+    private static class MediaSegment extends Segment {
+        private MediaEntity entity;
+
+        public MediaSegment(MediaEntity entity) {
+            super(entity.getStart(), entity.getEnd(), entity.getMediaURLHttps());
+            this.entity = entity;
+        }
+
+        @Override
+        public void onClick(Context context) {
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(entity.getMediaURLHttps()));
+            context.startActivity(intent);
+        }
+    }
+
     private static SpannableStringBuilder formatStatus(Status status, final Context context) {
         SpannableStringBuilder builder = new SpannableStringBuilder();
 
         List<Segment> segments = new ArrayList<Segment>();
         for (URLEntity entity : status.getURLEntities()) {
-            segments.add(new UrlSegment(entity.getStart(), entity.getEnd(), entity.getExpandedURL()));
+            segments.add(new UrlSegment(entity));
         }
         for (UserMentionEntity entity : status.getUserMentionEntities()) {
-            segments.add(new MentionSegment(entity.getStart(), entity.getEnd(), entity));
+            segments.add(new MentionSegment(entity));
+        }
+        for (MediaEntity entity : status.getMediaEntities()) {
+            segments.add(new MediaSegment(entity));
         }
 
         Collections.sort(segments, new Comparator<Segment>() {
