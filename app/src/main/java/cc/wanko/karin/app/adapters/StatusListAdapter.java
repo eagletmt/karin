@@ -19,6 +19,7 @@ import cc.wanko.karin.app.utils.LruImageCache;
 import cc.wanko.karin.app.utils.RoboViewHolder;
 import roboguice.inject.InjectView;
 import twitter4j.Status;
+import twitter4j.URLEntity;
 import twitter4j.User;
 
 /**
@@ -80,7 +81,7 @@ public class StatusListAdapter extends ArrayAdapter<Status> {
             setLayoutHeight(holder.retweeterArea, ViewGroup.LayoutParams.WRAP_CONTENT);
             status = retweet;
         }
-        holder.statusText.setText(status.getText());
+        holder.statusText.setText(formatStatus(status));
         User user = status.getUser();
         holder.userName.setText(user.getScreenName());
 
@@ -109,5 +110,13 @@ public class StatusListAdapter extends ArrayAdapter<Status> {
         ViewGroup.LayoutParams params = view.getLayoutParams();
         params.height = height;
         view.setLayoutParams(params);
+    }
+
+    private static String formatStatus(Status status) {
+        String text = status.getText();
+        for (URLEntity entity : status.getURLEntities()) {
+            text = text.replace(entity.getURL(), entity.getExpandedURL());
+        }
+        return text;
     }
 }
