@@ -391,7 +391,9 @@ public class StatusListAdapter extends ArrayAdapter<Status> {
         String text = status.getText();
         int textIndex = 0;
         for (final Segment segment : segments) {
-            builder.append(text.substring(textIndex, segment.start));
+            if (textIndex != segment.start) {
+                builder.append(text.substring(textIndex, segment.start));
+            }
             textIndex = segment.end;
 
             int spanStart = builder.length();
@@ -403,7 +405,9 @@ public class StatusListAdapter extends ArrayAdapter<Status> {
                 }
             }, spanStart, builder.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         }
-        builder.append(text.substring(textIndex));
+        if (textIndex != text.length()) {
+            builder.append(text.substring(textIndex));
+        }
 
         return builder;
     }
