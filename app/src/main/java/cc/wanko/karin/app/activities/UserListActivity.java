@@ -22,8 +22,6 @@ public class UserListActivity extends RoboActionBarActivity {
     @InjectFragment(R.id.user_list_statuses)
     private StatusListFragment statusListFragment;
 
-    private StatusSource statusSource;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,7 +29,7 @@ public class UserListActivity extends RoboActionBarActivity {
 
         Intent intent = getIntent();
         getSupportActionBar().setTitle(intent.getStringExtra(ARGS_LIST_NAME));
-        statusSource = new UserListSource(this, intent.getLongExtra(ARGS_LIST_ID, -1));
+        StatusSource statusSource = new UserListSource(this, intent.getLongExtra(ARGS_LIST_ID, -1));
 
         statusListFragment.setStatusSource(statusSource);
         statusListFragment.retrieveStatuses();

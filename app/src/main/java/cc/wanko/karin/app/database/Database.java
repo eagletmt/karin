@@ -37,7 +37,7 @@ public class Database {
         }
     }
 
-    private SQLiteDatabase db;
+    private final SQLiteDatabase db;
 
     public Database(Context context) {
         db = new Helper(context).getWritableDatabase();
@@ -53,7 +53,8 @@ public class Database {
     public long getTopId(String key) {
         Cursor cursor = db.rawQuery(
                 "SELECT " + TOP_ID_COLUMN + " FROM " + TOP_IDS_TABLE
-                        + " WHERE " + KEY_COLUMN + " = ? LIMIT 1", new String[] { key });
+                        + " WHERE " + KEY_COLUMN + " = ? LIMIT 1", new String[]{key}
+        );
         long topId = -1;
         if (cursor.moveToNext()) {
             topId = cursor.getLong(0);

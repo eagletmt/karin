@@ -12,7 +12,7 @@ import twitter4j.TwitterException;
  * Created by eagletmt on 14/05/05.
  */
 public class HomeTimelineSource implements StatusSource {
-    private Twitter twitter;
+    private final Twitter twitter;
 
     public HomeTimelineSource(Context context) {
         super();

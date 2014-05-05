@@ -100,7 +100,7 @@ public class StatusListAdapter extends ArrayAdapter<Status> {
         }
     }
 
-    private ImageLoader imageLoader;
+    private final ImageLoader imageLoader;
 
     public StatusListAdapter(Context context) {
         super(context, -1);
@@ -323,7 +323,7 @@ public class StatusListAdapter extends ArrayAdapter<Status> {
     }
 
     private static class UrlSegment extends Segment {
-        private URLEntity entity;
+        private final URLEntity entity;
 
         public UrlSegment(URLEntity entity) {
             super(entity.getStart(), entity.getEnd(), entity.getExpandedURL());
@@ -338,7 +338,7 @@ public class StatusListAdapter extends ArrayAdapter<Status> {
     }
 
     private static class MentionSegment extends Segment {
-        private UserMentionEntity entity;
+        private final UserMentionEntity entity;
 
         public MentionSegment(UserMentionEntity entity) {
             super(entity.getStart(), entity.getEnd(), "@" + entity.getScreenName());
@@ -353,7 +353,7 @@ public class StatusListAdapter extends ArrayAdapter<Status> {
     }
 
     private static class MediaSegment extends Segment {
-        private MediaEntity entity;
+        private final MediaEntity entity;
 
         public MediaSegment(MediaEntity entity) {
             super(entity.getStart(), entity.getEnd(), entity.getMediaURLHttps());

@@ -29,8 +29,6 @@ public class MainActivity extends RoboActionBarActivity {
     @InjectView(R.id.tweet_button)
     private Button tweetButton;
 
-    private MainPagerAdapter pagerAdapter;
-
     private Twitter twitter;
 
     @Override
@@ -45,7 +43,7 @@ public class MainActivity extends RoboActionBarActivity {
         final ActionBar actionBar = getSupportActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
-        pagerAdapter = new MainPagerAdapter(this);
+        MainPagerAdapter pagerAdapter = new MainPagerAdapter(this);
         viewPager.setAdapter(pagerAdapter);
         viewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override

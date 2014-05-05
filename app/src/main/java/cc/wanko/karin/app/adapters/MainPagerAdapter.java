@@ -13,7 +13,7 @@ import cc.wanko.karin.app.fragments.UserListListFragment;
  * Created by eagletmt on 14/05/05.
  */
 public class MainPagerAdapter extends FragmentPagerAdapter {
-    private FragmentActivity activity;
+    private final FragmentActivity activity;
 
     public MainPagerAdapter(FragmentActivity activity) {
         super(activity.getSupportFragmentManager());

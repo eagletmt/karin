@@ -24,15 +24,14 @@ import twitter4j.auth.RequestToken;
 public class OAuthActivity extends RoboFragmentActivity {
 
     @InjectView(R.id.twitter_authorize_button)
-    Button authorizeButton;
+    private Button authorizeButton;
     @InjectResource(R.string.twitter_callback_url)
-    String callbackUrl;
+    private String callbackUrl;
 
     private Twitter twitter;
 
     public static Intent createIntent(Context context) {
-        Intent intent = new Intent(context, OAuthActivity.class);
-        return intent;
+        return new Intent(context, OAuthActivity.class);
     }
 
     @Override

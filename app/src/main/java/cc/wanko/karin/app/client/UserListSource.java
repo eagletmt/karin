@@ -12,8 +12,8 @@ import twitter4j.TwitterException;
  * Created by eagletmt on 14/05/05.
  */
 public class UserListSource implements StatusSource {
-    private Twitter twitter;
-    private long listId;
+    private final Twitter twitter;
+    private final long listId;
 
     public UserListSource(Context context, long listId) {
         super();
