@@ -2,6 +2,7 @@ package cc.wanko.karin.app.database;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
@@ -47,5 +48,17 @@ public class Database {
         values.put(KEY_COLUMN, key);
         values.put(TOP_ID_COLUMN, topId);
         db.insertWithOnConflict(TOP_IDS_TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
+    }
+
+    public long getTopId(String key) {
+        Cursor cursor = db.rawQuery(
+                "SELECT " + TOP_ID_COLUMN + " FROM " + TOP_IDS_TABLE
+                        + " WHERE " + KEY_COLUMN + " = ? LIMIT 1", new String[] { key });
+        long topId = -1;
+        if (cursor.moveToNext()) {
+            topId = cursor.getLong(0);
+        }
+        cursor.close();
+        return topId;
     }
 }

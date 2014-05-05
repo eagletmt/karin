@@ -96,6 +96,7 @@ public class StatusListFragment extends RoboFragment {
         new RoboAsyncTask<ResponseList<Status>>(getActivity()) {
             @Override
             public ResponseList<Status> call() throws Exception {
+                Ln.d("Get statuses with sinceId=" + paging.getSinceId());
                 return statusSource.getStatuses(paging);
             }
 
@@ -104,15 +105,19 @@ public class StatusListFragment extends RoboFragment {
                 RateLimitStatus limit = statuses.getRateLimitStatus();
                 Ln.d("access level=" + statuses.getAccessLevel() + ", rate limit=" + limit.getRemaining() + "/" + limit.getLimit());
 
-                boolean isFirstFetch = statusListAdapter.isEmpty();
                 int position = statusList.getFirstVisiblePosition();
                 Collections.reverse(statuses);
+                long topId = db.getTopId(statusSource.getCacheKey());
+                int pos = 0;
                 for (Status status : statuses) {
                     statusListAdapter.insert(status, 0);
+                    ++pos;
+                    if (status.getId() == topId) {
+                        pos = 0;
+                    }
                 }
-                if (!isFirstFetch) {
-                    statusList.setSelection(position + statuses.size());
-                }
+                statusList.setSelection(position + pos);
+
                 Toast.makeText(getContext(), "Got " + statuses.size() + " tweets", Toast.LENGTH_SHORT).show();
 
                 storeTopId();
