@@ -60,6 +60,8 @@ public class StatusListAdapter extends ArrayAdapter<Status> {
         TextView retweeterName;
         @InjectView(R.id.status_favorite_button)
         ToggleButton favoriteButton;
+        @InjectView(R.id.status_retweet_button)
+        ToggleButton retweetButton;
 
         public ViewHolder(View root) {
             super(root);
@@ -173,6 +175,25 @@ public class StatusListAdapter extends ArrayAdapter<Status> {
             }
         });
 
+        if (user.isProtected()) {
+            holder.retweetButton.setEnabled(false);
+        } else {
+            holder.retweetButton.setEnabled(true);
+            holder.retweetButton.setChecked(status.isRetweeted());
+            holder.retweetButton.setTag(new StatusButtonTag(status));
+            holder.retweetButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    ToggleButton button = (ToggleButton) view;
+                    StatusButtonTag tag = (StatusButtonTag) button.getTag();
+
+                    if (button.isChecked()) {
+                        retweetStatus(button, tag.statusId);
+                    }
+                }
+            });
+        }
+
         return convertView;
     }
 
@@ -223,6 +244,26 @@ public class StatusListAdapter extends ArrayAdapter<Status> {
             protected void onException(Exception e) throws RuntimeException {
                 reportException("Could not unfavorite " + statusId, e);
                 button.setChecked(true);
+            }
+        }.execute();
+    }
+
+    private void retweetStatus(final ToggleButton button, final long statusId) {
+        new RoboAsyncTask<Status>(getContext()) {
+            @Override
+            public Status call() throws Exception {
+                return TwitterProvider.get(getContext()).retweetStatus(statusId);
+            }
+
+            @Override
+            protected void onSuccess(Status status) throws Exception {
+                Toast.makeText(getContext(), R.string.retweeted, Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            protected void onException(Exception e) throws RuntimeException {
+                reportException("Could not retweet " + statusId, e);
+                button.setChecked(false);
             }
         }.execute();
     }

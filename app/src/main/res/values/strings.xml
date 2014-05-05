@@ -12,5 +12,7 @@
     <string name="favorited">Faved</string>
     <string name="unfavorited">Unfaved</string>
     <string name="favorite">Fav</string>
+    <string name="retweet">RT</string>
+    <string name="retweeted">RTed</string>
 
 </resources>

@@ -58,9 +58,17 @@
                     android:id="@+id/status_favorite_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:checked="false"
                     android:textOff="@string/favorite"
-                    android:textOn="@string/favorited"
-                    android:checked="false" />
+                    android:textOn="@string/favorited" />
+
+                <ToggleButton
+                    android:id="@+id/status_retweet_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="false"
+                    android:textOff="@string/retweet"
+                    android:textOn="@string/retweeted" />
 
             </LinearLayout>
         </LinearLayout>
