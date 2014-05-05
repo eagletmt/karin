@@ -65,6 +65,16 @@ public class StatusListAdapter extends ArrayAdapter<Status> {
         }
     }
 
+    private static class UserNameTag {
+        final long userId;
+        final String screenName;
+
+        public UserNameTag(User user) {
+            this.userId = user.getId();
+            this.screenName = user.getScreenName();
+        }
+    }
+
     private ImageLoader imageLoader;
 
     public StatusListAdapter(Context context) {
@@ -89,8 +99,19 @@ public class StatusListAdapter extends ArrayAdapter<Status> {
         if (retweet == null) {
             setLayoutHeight(holder.retweeterArea, 0);
         } else {
-            holder.retweeterName.setText("@" + status.getUser().getScreenName());
+            User retweeter = status.getUser();
+            holder.retweeterName.setText("@" + retweeter.getScreenName());
             setLayoutHeight(holder.retweeterArea, ViewGroup.LayoutParams.WRAP_CONTENT);
+
+            holder.retweeterName.setTag(new UserNameTag(retweeter));
+            holder.retweeterName.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    UserNameTag tag = (UserNameTag) view.getTag();
+                    getContext().startActivity(UserStatusesActivity.createIntent(getContext(), tag.userId, tag.screenName));
+                }
+            });
+
             status = retweet;
         }
         holder.statusText.setText(formatStatus(status, getContext()));
