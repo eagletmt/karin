@@ -61,7 +61,8 @@
                     android:layout_height="match_parent"
                     android:checked="false"
                     android:textOff="@string/favorite"
-                    android:textOn="@string/favorited" />
+                    android:textOn="@string/favorited"
+                    android:textSize="@dimen/status_button_text_size" />
 
                 <ToggleButton
                     android:id="@+id/status_retweet_button"
@@ -69,14 +70,16 @@
                     android:layout_height="match_parent"
                     android:checked="false"
                     android:textOff="@string/retweet"
-                    android:textOn="@string/retweeted" />
+                    android:textOn="@string/retweeted"
+                    android:textSize="@dimen/status_button_text_size" />
 
                 <ToggleButton
                     android:id="@+id/status_destroy_button"
                     android:layout_width="@dimen/status_button_width"
                     android:layout_height="match_parent"
                     android:textOff="@string/status_destroy"
-                    android:textOn="@string/status_destroyed" />
+                    android:textOn="@string/status_destroyed"
+                    android:textSize="@dimen/status_button_text_size" />
 
             </LinearLayout>
         </LinearLayout>
