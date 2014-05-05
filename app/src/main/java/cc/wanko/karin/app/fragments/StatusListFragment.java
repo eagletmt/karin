@@ -105,6 +105,7 @@ public class StatusListFragment extends RoboFragment {
                 RateLimitStatus limit = statuses.getRateLimitStatus();
                 Ln.d("access level=" + statuses.getAccessLevel() + ", rate limit=" + limit.getRemaining() + "/" + limit.getLimit());
 
+                boolean isFirstFetch = statusListAdapter.isEmpty();
                 int position = statusList.getFirstVisiblePosition();
                 Collections.reverse(statuses);
                 long topId = db.getTopId(statusSource.getCacheKey());
@@ -116,7 +117,9 @@ public class StatusListFragment extends RoboFragment {
                         pos = 0;
                     }
                 }
-                statusList.setSelection(position + pos);
+                if (!isFirstFetch) {
+                    statusList.setSelection(position + pos);
+                }
 
                 Toast.makeText(getContext(), "Got " + statuses.size() + " tweets", Toast.LENGTH_SHORT).show();
 
