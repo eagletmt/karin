@@ -114,7 +114,7 @@ public class StatusListAdapter extends ArrayAdapter<Status> {
             setLayoutHeight(holder.retweeterArea, 0);
         } else {
             User retweeter = status.getUser();
-            holder.retweeterName.setText("@" + retweeter.getScreenName());
+            holder.retweeterName.setText(retweeter.getScreenName());
             setLayoutHeight(holder.retweeterArea, ViewGroup.LayoutParams.WRAP_CONTENT);
 
             holder.retweeterName.setTag(new UserNameTag(retweeter));
@@ -132,7 +132,7 @@ public class StatusListAdapter extends ArrayAdapter<Status> {
         holder.statusText.setMovementMethod(LinkMovementMethod.getInstance());
         holder.createdAt.setText(formatDate(status.getCreatedAt()));
         User user = status.getUser();
-        holder.userName.setText("@" + user.getScreenName());
+        holder.userName.setText(user.getScreenName());
 
         holder.userIcon.setOnClickListener(new View.OnClickListener() {
             @Override
