@@ -17,7 +17,7 @@
     <string name="tweet_button_label">Tweet</string>
     <string name="status_user_icon_description">icon</string>
     <string name="authorize">Authorize</string>
-    <string name="retweeted_by_label">Retweeted by </string>
+    <string name="retweeted_by_label">Retweeted by\ </string>
 
     <string name="status_user_name_placeholder">screen_name</string>
     <string name="status_created_at_placeholder">2014-05-05 11:56:00</string>
