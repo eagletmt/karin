@@ -1,12 +1,7 @@
 package cc.wanko.karin.app.adapters;
 
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
-import android.text.Spannable;
-import android.text.SpannableStringBuilder;
 import android.text.method.LinkMovementMethod;
-import android.text.style.ClickableSpan;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -21,25 +16,19 @@ import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.Volley;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
-import java.util.List;
 
 import cc.wanko.karin.app.R;
 import cc.wanko.karin.app.activities.UserStatusesActivity;
 import cc.wanko.karin.app.client.TwitterProvider;
+import cc.wanko.karin.app.textbuilder.StatusTextBuilder;
 import cc.wanko.karin.app.utils.LruImageCache;
 import cc.wanko.karin.app.utils.RoboViewHolder;
 import roboguice.inject.InjectView;
 import roboguice.util.Ln;
 import roboguice.util.RoboAsyncTask;
-import twitter4j.MediaEntity;
 import twitter4j.Status;
-import twitter4j.URLEntity;
 import twitter4j.User;
-import twitter4j.UserMentionEntity;
 
 /**
  * Created by eagletmt on 14/04/29.
@@ -139,7 +128,7 @@ public class StatusListAdapter extends ArrayAdapter<Status> {
 
             status = retweet;
         }
-        holder.statusText.setText(formatStatus(status, getContext()));
+        holder.statusText.setText(new StatusTextBuilder(getContext()).buildStatus(status));
         holder.statusText.setMovementMethod(LinkMovementMethod.getInstance());
         holder.createdAt.setText(formatDate(status.getCreatedAt()));
         User user = status.getUser();
@@ -307,108 +296,5 @@ public class StatusListAdapter extends ArrayAdapter<Status> {
         Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
         Ln.e(message);
         e.printStackTrace();
-    }
-
-    private static abstract class Segment {
-        final int start, end;
-        final String text;
-
-        public Segment(int start, int end, String text) {
-            this.start = start;
-            this.end = end;
-            this.text = text;
-        }
-
-        abstract public void onClick(Context context);
-    }
-
-    private static class UrlSegment extends Segment {
-        private final URLEntity entity;
-
-        public UrlSegment(URLEntity entity) {
-            super(entity.getStart(), entity.getEnd(), entity.getExpandedURL());
-            this.entity = entity;
-        }
-
-        @Override
-        public void onClick(Context context) {
-            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(entity.getExpandedURL()));
-            context.startActivity(intent);
-        }
-    }
-
-    private static class MentionSegment extends Segment {
-        private final UserMentionEntity entity;
-
-        public MentionSegment(UserMentionEntity entity) {
-            super(entity.getStart(), entity.getEnd(), "@" + entity.getScreenName());
-            this.entity = entity;
-        }
-
-        @Override
-        public void onClick(Context context) {
-            Intent intent = UserStatusesActivity.createIntent(context, entity);
-            context.startActivity(intent);
-        }
-    }
-
-    private static class MediaSegment extends Segment {
-        private final MediaEntity entity;
-
-        public MediaSegment(MediaEntity entity) {
-            super(entity.getStart(), entity.getEnd(), entity.getMediaURLHttps());
-            this.entity = entity;
-        }
-
-        @Override
-        public void onClick(Context context) {
-            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(entity.getMediaURLHttps()));
-            context.startActivity(intent);
-        }
-    }
-
-    private static SpannableStringBuilder formatStatus(Status status, final Context context) {
-        SpannableStringBuilder builder = new SpannableStringBuilder();
-
-        List<Segment> segments = new ArrayList<Segment>();
-        for (URLEntity entity : status.getURLEntities()) {
-            segments.add(new UrlSegment(entity));
-        }
-        for (UserMentionEntity entity : status.getUserMentionEntities()) {
-            segments.add(new MentionSegment(entity));
-        }
-        for (MediaEntity entity : status.getMediaEntities()) {
-            segments.add(new MediaSegment(entity));
-        }
-
-        Collections.sort(segments, new Comparator<Segment>() {
-            @Override
-            public int compare(Segment s1, Segment s2) {
-                return s1.start - s2.start;
-            }
-        });
-
-        String text = status.getText();
-        int textIndex = 0;
-        for (final Segment segment : segments) {
-            if (textIndex != segment.start) {
-                builder.append(text.substring(textIndex, segment.start));
-            }
-            textIndex = segment.end;
-
-            int spanStart = builder.length();
-            builder.append(segment.text);
-            builder.setSpan(new ClickableSpan() {
-                @Override
-                public void onClick(View view) {
-                    segment.onClick(context);
-                }
-            }, spanStart, builder.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        }
-        if (textIndex != text.length()) {
-            builder.append(text.substring(textIndex));
-        }
-
-        return builder;
     }
 }
