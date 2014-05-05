@@ -35,6 +35,10 @@
             android:name="cc.wanko.karin.app.activities.UserListActivity"
             android:label="@string/title_activity_user_list" >
         </activity>
+        <activity
+            android:name="cc.wanko.karin.app.activities.UserStatusesActivity"
+            android:label="@string/title_activity_user_statuses" >
+        </activity>
     </application>
 
     <uses-permission android:name="android.permission.INTERNET" />

@@ -1,6 +1,7 @@
 package cc.wanko.karin.app.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -15,6 +16,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
 import cc.wanko.karin.app.R;
+import cc.wanko.karin.app.activities.UserStatusesActivity;
 import cc.wanko.karin.app.utils.LruImageCache;
 import cc.wanko.karin.app.utils.RoboViewHolder;
 import roboguice.inject.InjectView;
@@ -35,6 +37,16 @@ public class StatusListAdapter extends ArrayAdapter<Status> {
 
         public ViewHolder(View root) {
             super(root);
+        }
+    }
+
+    private static class UserIconTag {
+        final ImageLoader.ImageContainer imageContainer;
+        final int position;
+
+        public UserIconTag(ImageLoader.ImageContainer imageContainer, int position) {
+            this.imageContainer = imageContainer;
+            this.position = position;
         }
     }
 
@@ -62,13 +74,23 @@ public class StatusListAdapter extends ArrayAdapter<Status> {
         holder.statusText.setText(status.getText());
         holder.userName.setText(user.getScreenName());
 
-        ImageLoader.ImageContainer container = (ImageLoader.ImageContainer) holder.userIcon.getTag();
-        if (container != null) {
-            container.cancelRequest();
+        holder.userIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                UserIconTag tag = (UserIconTag) view.getTag();
+                Status status = getItem(tag.position);
+                Intent intent = UserStatusesActivity.createIntent(getContext(), status.getUser());
+                getContext().startActivity(intent);
+            }
+        });
+
+        UserIconTag tag = (UserIconTag) holder.userIcon.getTag();
+        if (tag != null) {
+            tag.imageContainer.cancelRequest();
         }
         ImageLoader.ImageListener listener = ImageLoader.getImageListener(holder.userIcon, R.drawable.ic_launcher, android.R.drawable.ic_delete);
-        container = imageLoader.get(user.getBiggerProfileImageURLHttps(), listener);
-        holder.userIcon.setTag(container);
+        ImageLoader.ImageContainer container = imageLoader.get(user.getBiggerProfileImageURLHttps(), listener);
+        holder.userIcon.setTag(new UserIconTag(container, position));
 
         return convertView;
     }
