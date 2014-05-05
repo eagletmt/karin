@@ -15,6 +15,7 @@
             android:layout_width="@dimen/status_user_icon"
             android:layout_height="@dimen/status_user_icon"
             android:layout_gravity="center_vertical"
+            android:contentDescription="@string/status_user_icon_description"
             android:paddingRight="8dp"
             android:src="@drawable/ic_launcher" />
 
@@ -33,21 +34,21 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="\@screen_name"
+                    android:text="@string/status_user_name_placeholder"
                     android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/status_created_at"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="2014-05-05 11:56:00" />
+                    android:text="@string/status_created_at_placeholder" />
             </LinearLayout>
 
             <TextView
                 android:id="@+id/status_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="status text" />
+                android:text="@string/status_text_placeholder" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -90,13 +91,13 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Retweeted by " />
+            android:text="@string/retweeted_by_label" />
 
         <TextView
             android:id="@+id/status_retweeter_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="\@screen_name"
+            android:text="@string/status_user_name_placeholder"
             android:textStyle="bold" />
     </LinearLayout>
 </LinearLayout>
