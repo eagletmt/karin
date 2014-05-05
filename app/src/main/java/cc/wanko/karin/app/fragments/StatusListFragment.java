@@ -117,7 +117,7 @@ public class StatusListFragment extends RoboFragment {
                         pos = 0;
                     }
                 }
-                if (!isFirstFetch) {
+                if (!isFirstFetch || pos != statuses.size()) {
                     statusList.setSelection(position + pos);
                 }
 
