@@ -98,6 +98,7 @@ public class StatusListFragment extends RoboFragment {
                 if (!isFirstFetch) {
                     statusList.setSelection(position + statuses.size());
                 }
+                Toast.makeText(getContext(), "Got " + statuses.size() + " tweets", Toast.LENGTH_SHORT).show();
             }
 
             @Override
