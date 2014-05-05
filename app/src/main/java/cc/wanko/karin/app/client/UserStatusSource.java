@@ -25,4 +25,9 @@ public class UserStatusSource implements StatusSource {
     public ResponseList<Status> getStatuses(Paging paging) throws TwitterException {
         return twitter.getUserTimeline(userId, paging);
     }
+
+    @Override
+    public String getCacheKey() {
+        return "user_" + userId;
+    }
 }

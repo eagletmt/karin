@@ -10,4 +10,5 @@ import twitter4j.TwitterException;
  */
 public interface StatusSource {
     public ResponseList<Status> getStatuses(Paging paging) throws TwitterException;
+    public String getCacheKey();
 }

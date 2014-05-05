@@ -13,6 +13,7 @@ import java.util.Collections;
 import cc.wanko.karin.app.R;
 import cc.wanko.karin.app.adapters.StatusListAdapter;
 import cc.wanko.karin.app.client.StatusSource;
+import cc.wanko.karin.app.database.Database;
 import roboguice.fragment.RoboFragment;
 import roboguice.inject.InjectView;
 import roboguice.util.Ln;
@@ -36,6 +37,7 @@ public class StatusListFragment extends RoboFragment {
     private StatusListAdapter statusListAdapter;
 
     private StatusSource statusSource;
+    private Database db;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -61,9 +63,20 @@ public class StatusListFragment extends RoboFragment {
             }
         });
 
+        db = new Database(getActivity());
         if (statusSource != null) {
             retrieveStatuses();
         }
+    }
+
+    private void storeTopId() {
+        if (statusListAdapter.isEmpty()) {
+            return;
+        }
+        String key = statusSource.getCacheKey();
+        long topId = statusListAdapter.getItem(0).getId();
+        Ln.d("Store " + topId + " with " + key);
+        db.storeTopId(key, topId);
     }
 
     public void setStatusSource(StatusSource statusSource) {
@@ -101,6 +114,8 @@ public class StatusListFragment extends RoboFragment {
                     statusList.setSelection(position + statuses.size());
                 }
                 Toast.makeText(getContext(), "Got " + statuses.size() + " tweets", Toast.LENGTH_SHORT).show();
+
+                storeTopId();
             }
 
             @Override
