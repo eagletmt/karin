@@ -2,6 +2,11 @@ package cc.wanko.karin.app.adapters;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -12,6 +17,11 @@ import android.widget.TextView;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.Volley;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 import cc.wanko.karin.app.R;
 import cc.wanko.karin.app.activities.UserStatusesActivity;
@@ -81,7 +91,8 @@ public class StatusListAdapter extends ArrayAdapter<Status> {
             setLayoutHeight(holder.retweeterArea, ViewGroup.LayoutParams.WRAP_CONTENT);
             status = retweet;
         }
-        holder.statusText.setText(formatStatus(status));
+        holder.statusText.setText(formatStatus(status, getContext()));
+        holder.statusText.setMovementMethod(LinkMovementMethod.getInstance());
         User user = status.getUser();
         holder.userName.setText(user.getScreenName());
 
@@ -112,11 +123,63 @@ public class StatusListAdapter extends ArrayAdapter<Status> {
         view.setLayoutParams(params);
     }
 
-    private static String formatStatus(Status status) {
-        String text = status.getText();
-        for (URLEntity entity : status.getURLEntities()) {
-            text = text.replace(entity.getURL(), entity.getExpandedURL());
+    private static abstract class Segment {
+        final int start, end;
+        final String text;
+
+        public Segment(int start, int end, String text) {
+            this.start = start;
+            this.end = end;
+            this.text = text;
         }
-        return text;
+
+        abstract public void onClick(Context context);
+    }
+
+    private static class UrlSegment extends Segment {
+        public UrlSegment(int start, int end, String text) {
+            super(start, end, text);
+        }
+
+        @Override
+        public void onClick(Context context) {
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(text));
+            context.startActivity(intent);
+        }
+    }
+
+    private static SpannableStringBuilder formatStatus(Status status, final Context context) {
+        SpannableStringBuilder builder = new SpannableStringBuilder();
+
+        List<Segment> segments = new ArrayList<Segment>();
+        for (URLEntity entity : status.getURLEntities()) {
+            segments.add(new UrlSegment(entity.getStart(), entity.getEnd(), entity.getExpandedURL()));
+        }
+
+        Collections.sort(segments, new Comparator<Segment>() {
+            @Override
+            public int compare(Segment s1, Segment s2) {
+                return Integer.compare(s1.start, s2.start);
+            }
+        });
+
+        String text = status.getText();
+        int textIndex = 0;
+        for (final Segment segment : segments) {
+            builder.append(text.substring(textIndex, segment.start));
+            textIndex = segment.end;
+
+            int spanStart = builder.length();
+            builder.append(segment.text);
+            builder.setSpan(new ClickableSpan() {
+                @Override
+                public void onClick(View view) {
+                    segment.onClick(context);
+                }
+            }, spanStart, builder.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }
+        builder.append(text.substring(textIndex));
+
+        return builder;
     }
 }
