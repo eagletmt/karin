@@ -13,6 +13,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.ImageLoader;
@@ -27,9 +29,12 @@ import java.util.List;
 
 import cc.wanko.karin.app.R;
 import cc.wanko.karin.app.activities.UserStatusesActivity;
+import cc.wanko.karin.app.client.TwitterProvider;
 import cc.wanko.karin.app.utils.LruImageCache;
 import cc.wanko.karin.app.utils.RoboViewHolder;
 import roboguice.inject.InjectView;
+import roboguice.util.Ln;
+import roboguice.util.RoboAsyncTask;
 import twitter4j.MediaEntity;
 import twitter4j.Status;
 import twitter4j.URLEntity;
@@ -53,6 +58,8 @@ public class StatusListAdapter extends ArrayAdapter<Status> {
         LinearLayout retweeterArea;
         @InjectView(R.id.status_retweeter_name)
         TextView retweeterName;
+        @InjectView(R.id.status_favorite_button)
+        ToggleButton favoriteButton;
 
         public ViewHolder(View root) {
             super(root);
@@ -78,6 +85,14 @@ public class StatusListAdapter extends ArrayAdapter<Status> {
         public UserNameTag(User user) {
             this.userId = user.getId();
             this.screenName = user.getScreenName();
+        }
+    }
+
+    private static class StatusButtonTag {
+        final long statusId;
+
+        public StatusButtonTag(Status status) {
+            this.statusId = status.getId();
         }
     }
 
@@ -142,6 +157,22 @@ public class StatusListAdapter extends ArrayAdapter<Status> {
         ImageLoader.ImageContainer container = imageLoader.get(user.getBiggerProfileImageURLHttps(), listener);
         holder.userIcon.setTag(new UserIconTag(container, user));
 
+        holder.favoriteButton.setChecked(status.isFavorited());
+        holder.favoriteButton.setTag(new StatusButtonTag(status));
+        holder.favoriteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ToggleButton button = (ToggleButton) view;
+                StatusButtonTag tag = (StatusButtonTag) button.getTag();
+
+                if (button.isChecked()) {
+                    createFavorite(button, tag.statusId);
+                } else {
+                    destroyFavorite(button, tag.statusId);
+                }
+            }
+        });
+
         return convertView;
     }
 
@@ -154,6 +185,53 @@ public class StatusListAdapter extends ArrayAdapter<Status> {
     private static String formatDate(Date date) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         return sdf.format(date);
+    }
+
+    private void createFavorite(final ToggleButton button, final long statusId) {
+        new RoboAsyncTask<Status>(getContext()) {
+            @Override
+            public Status call() throws Exception {
+                return TwitterProvider.get(getContext()).createFavorite(statusId);
+            }
+
+            @Override
+            protected void onSuccess(Status status) throws Exception {
+                Toast.makeText(getContext(), R.string.favorited, Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            protected void onException(Exception e) throws RuntimeException {
+                reportException("Could not favorite " + statusId, e);
+                button.setChecked(false);
+            }
+        }.execute();
+    }
+
+    private void destroyFavorite(final ToggleButton button, final long statusId) {
+        new RoboAsyncTask<Status>(getContext()) {
+            @Override
+            public Status call() throws Exception {
+                return TwitterProvider.get(getContext()).destroyFavorite(statusId);
+            }
+
+            @Override
+            protected void onSuccess(Status status) throws Exception {
+                Toast.makeText(getContext(), R.string.unfavorited, Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            protected void onException(Exception e) throws RuntimeException {
+                reportException("Could not unfavorite " + statusId, e);
+                button.setChecked(true);
+            }
+        }.execute();
+    }
+
+    private void reportException(String message, Exception e) {
+        message += ": " + e.getClass().getSimpleName() + ": " + e.getMessage();
+        Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
+        Ln.e(message);
+        e.printStackTrace();
     }
 
     private static abstract class Segment {

@@ -9,5 +9,8 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_user_list">UserListActivity</string>
     <string name="title_activity_user_statuses">UserStatusesActivity</string>
+    <string name="favorited">Faved</string>
+    <string name="unfavorited">Unfaved</string>
+    <string name="favorite">Fav</string>
 
 </resources>
