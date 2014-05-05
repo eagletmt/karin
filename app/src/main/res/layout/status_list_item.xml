@@ -51,24 +51,31 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="@dimen/status_button_height"
                 android:orientation="horizontal">
 
                 <ToggleButton
                     android:id="@+id/status_favorite_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="@dimen/status_button_width"
+                    android:layout_height="match_parent"
                     android:checked="false"
                     android:textOff="@string/favorite"
                     android:textOn="@string/favorited" />
 
                 <ToggleButton
                     android:id="@+id/status_retweet_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="@dimen/status_button_width"
+                    android:layout_height="match_parent"
                     android:checked="false"
                     android:textOff="@string/retweet"
                     android:textOn="@string/retweeted" />
+
+                <ToggleButton
+                    android:id="@+id/status_destroy_button"
+                    android:layout_width="@dimen/status_button_width"
+                    android:layout_height="match_parent"
+                    android:textOff="@string/status_destroy"
+                    android:textOn="@string/status_destroyed" />
 
             </LinearLayout>
         </LinearLayout>

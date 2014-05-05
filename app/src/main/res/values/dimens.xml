@@ -4,4 +4,6 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
 
     <dimen name="status_user_icon">60dp</dimen>
+    <dimen name="status_button_height">30dp</dimen>
+    <dimen name="status_button_width">80dp</dimen>
 </resources>

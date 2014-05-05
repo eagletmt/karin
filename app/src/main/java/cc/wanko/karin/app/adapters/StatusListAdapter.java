@@ -62,6 +62,8 @@ public class StatusListAdapter extends ArrayAdapter<Status> {
         ToggleButton favoriteButton;
         @InjectView(R.id.status_retweet_button)
         ToggleButton retweetButton;
+        @InjectView(R.id.status_destroy_button)
+        ToggleButton destroyButton;
 
         public ViewHolder(View root) {
             super(root);
@@ -194,6 +196,17 @@ public class StatusListAdapter extends ArrayAdapter<Status> {
             });
         }
 
+        // Set original status for undoing retweets.
+        holder.destroyButton.setTag(new StatusButtonTag(getItem(position)));
+        holder.destroyButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ToggleButton button = (ToggleButton) view;
+                StatusButtonTag tag = (StatusButtonTag) button.getTag();
+                destroyStatus(button, tag.statusId);
+            }
+        });
+
         return convertView;
     }
 
@@ -263,6 +276,27 @@ public class StatusListAdapter extends ArrayAdapter<Status> {
             @Override
             protected void onException(Exception e) throws RuntimeException {
                 reportException("Could not retweet " + statusId, e);
+                button.setChecked(false);
+            }
+        }.execute();
+    }
+
+    private void destroyStatus(final ToggleButton button, final long statusId) {
+        new RoboAsyncTask<Status>(getContext()) {
+            @Override
+            public Status call() throws Exception {
+                return TwitterProvider.get(getContext()).destroyStatus(statusId);
+            }
+
+            @Override
+            protected void onSuccess(Status status) throws Exception {
+                Toast.makeText(getContext(), R.string.status_destroyed, Toast.LENGTH_SHORT).show();
+                // TODO: Remove status from adapter.
+            }
+
+            @Override
+            protected void onException(Exception e) throws RuntimeException {
+                reportException("Could not destroy status " + statusId, e);
                 button.setChecked(false);
             }
         }.execute();

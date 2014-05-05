@@ -14,5 +14,7 @@
     <string name="favorite">Fav</string>
     <string name="retweet">RT</string>
     <string name="retweeted">RTed</string>
+    <string name="status_destroy">Destroy</string>
+    <string name="status_destroyed">Destroyed</string>
 
 </resources>
