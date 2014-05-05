@@ -6,18 +6,32 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
 
 import cc.wanko.karin.app.R;
 import cc.wanko.karin.app.adapters.MainPagerAdapter;
 import cc.wanko.karin.app.client.TwitterProvider;
 import roboguice.activity.RoboActionBarActivity;
 import roboguice.inject.InjectView;
+import roboguice.util.Ln;
+import roboguice.util.RoboAsyncTask;
+import twitter4j.Status;
+import twitter4j.Twitter;
 
 public class MainActivity extends RoboActionBarActivity {
     @InjectView(R.id.main_pager)
     private ViewPager viewPager;
+    @InjectView(R.id.tweet_text)
+    private EditText tweetText;
+    @InjectView(R.id.tweet_button)
+    private Button tweetButton;
 
     private MainPagerAdapter pagerAdapter;
+
+    private Twitter twitter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +72,18 @@ public class MainActivity extends RoboActionBarActivity {
                     .setText(pagerAdapter.getPageTitle(i))
                     .setTabListener(tabListener));
         }
+
+        tweetButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String text = tweetText.getText().toString();
+                if (!text.isEmpty()) {
+                    updateStatus(text);
+                }
+            }
+        });
+
+        twitter = TwitterProvider.get(this);
     }
 
     @Override
@@ -80,5 +106,38 @@ public class MainActivity extends RoboActionBarActivity {
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void updateStatus(final String text) {
+        tweetButton.setEnabled(false);
+        new RoboAsyncTask<Status>(this) {
+            @Override
+            public Status call() throws Exception {
+                return twitter.updateStatus(text);
+            }
+
+            @Override
+            protected void onSuccess(Status status) throws Exception {
+                Toast.makeText(getContext(), "Updated", Toast.LENGTH_SHORT).show();
+                tweetText.setText("");
+            }
+
+            @Override
+            protected void onException(Exception e) throws RuntimeException {
+                reportException("Could not update status", e);
+            }
+
+            @Override
+            protected void onFinally() throws RuntimeException {
+                tweetButton.setEnabled(true);
+            }
+        }.execute();
+    }
+
+    private void reportException(String message, Exception e) {
+        message += ": " + e.getClass().getSimpleName() + ": " + e.getMessage();
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+        Ln.e(message);
+        e.printStackTrace();
     }
 }

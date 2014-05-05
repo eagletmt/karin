@@ -16,5 +16,6 @@
     <string name="retweeted">RTed</string>
     <string name="status_destroy">Destroy</string>
     <string name="status_destroyed">Destroyed</string>
+    <string name="tweet_button_label">Tweet</string>
 
 </resources>
