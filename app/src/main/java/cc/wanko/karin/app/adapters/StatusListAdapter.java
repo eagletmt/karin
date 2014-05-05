@@ -18,9 +18,11 @@ import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.Volley;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 
 import cc.wanko.karin.app.R;
@@ -43,6 +45,8 @@ public class StatusListAdapter extends ArrayAdapter<Status> {
         ImageView userIcon;
         @InjectView(R.id.status_user_name)
         TextView userName;
+        @InjectView(R.id.status_created_at)
+        TextView createdAt;
         @InjectView(R.id.status_text)
         TextView statusText;
         @InjectView(R.id.status_retweeter_area)
@@ -116,6 +120,7 @@ public class StatusListAdapter extends ArrayAdapter<Status> {
         }
         holder.statusText.setText(formatStatus(status, getContext()));
         holder.statusText.setMovementMethod(LinkMovementMethod.getInstance());
+        holder.createdAt.setText(formatDate(status.getCreatedAt()));
         User user = status.getUser();
         holder.userName.setText("@" + user.getScreenName());
 
@@ -144,6 +149,11 @@ public class StatusListAdapter extends ArrayAdapter<Status> {
         ViewGroup.LayoutParams params = view.getLayoutParams();
         params.height = height;
         view.setLayoutParams(params);
+    }
+
+    private static String formatDate(Date date) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        return sdf.format(date);
     }
 
     private static abstract class Segment {
