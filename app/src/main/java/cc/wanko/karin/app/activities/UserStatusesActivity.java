@@ -13,6 +13,7 @@ import roboguice.activity.RoboActionBarActivity;
 import roboguice.inject.InjectExtra;
 import roboguice.inject.InjectFragment;
 import twitter4j.User;
+import twitter4j.UserMentionEntity;
 
 public class UserStatusesActivity extends RoboActionBarActivity {
 
@@ -59,9 +60,17 @@ public class UserStatusesActivity extends RoboActionBarActivity {
     }
 
     public static Intent createIntent(Context context, User user) {
+        return createIntent(context, user.getId(), user.getScreenName());
+    }
+
+    public static Intent createIntent(Context context, UserMentionEntity entity) {
+        return createIntent(context, entity.getId(), entity.getScreenName());
+    }
+
+    public static Intent createIntent(Context context, long userId, String screenName) {
         Intent intent = new Intent(context, UserStatusesActivity.class);
-        intent.putExtra(ARGS_USER_ID, user.getId());
-        intent.putExtra(ARGS_SCREEN_NAME, user.getScreenName());
+        intent.putExtra(ARGS_USER_ID, userId);
+        intent.putExtra(ARGS_SCREEN_NAME, screenName);
         return intent;
     }
 }

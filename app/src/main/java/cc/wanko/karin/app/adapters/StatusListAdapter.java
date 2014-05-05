@@ -31,6 +31,7 @@ import roboguice.inject.InjectView;
 import twitter4j.Status;
 import twitter4j.URLEntity;
 import twitter4j.User;
+import twitter4j.UserMentionEntity;
 
 /**
  * Created by eagletmt on 14/04/29.
@@ -148,12 +149,30 @@ public class StatusListAdapter extends ArrayAdapter<Status> {
         }
     }
 
+    private static class MentionSegment extends Segment {
+        private UserMentionEntity entity;
+
+        public MentionSegment(int start, int end, UserMentionEntity entity) {
+            super(start, end, "@" + entity.getScreenName());
+            this.entity = entity;
+        }
+
+        @Override
+        public void onClick(Context context) {
+            Intent intent = UserStatusesActivity.createIntent(context, entity);
+            context.startActivity(intent);
+        }
+    }
+
     private static SpannableStringBuilder formatStatus(Status status, final Context context) {
         SpannableStringBuilder builder = new SpannableStringBuilder();
 
         List<Segment> segments = new ArrayList<Segment>();
         for (URLEntity entity : status.getURLEntities()) {
             segments.add(new UrlSegment(entity.getStart(), entity.getEnd(), entity.getExpandedURL()));
+        }
+        for (UserMentionEntity entity : status.getUserMentionEntities()) {
+            segments.add(new MentionSegment(entity.getStart(), entity.getEnd(), entity));
         }
 
         Collections.sort(segments, new Comparator<Segment>() {
