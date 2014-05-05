@@ -103,7 +103,7 @@ public class StatusListFragment extends RoboFragment {
 
             @Override
             protected void onException(Exception e) throws RuntimeException {
-                reportException("Cannot get home timeline", e);
+                reportException("Cannot get statuses from " + statusSource.getClass().getSimpleName(), e);
             }
 
             @Override
