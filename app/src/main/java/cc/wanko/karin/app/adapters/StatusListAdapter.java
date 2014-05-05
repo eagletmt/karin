@@ -96,7 +96,7 @@ public class StatusListAdapter extends ArrayAdapter<Status> {
         holder.statusText.setText(formatStatus(status, getContext()));
         holder.statusText.setMovementMethod(LinkMovementMethod.getInstance());
         User user = status.getUser();
-        holder.userName.setText(user.getScreenName());
+        holder.userName.setText("@" + user.getScreenName());
 
         holder.userIcon.setOnClickListener(new View.OnClickListener() {
             @Override
