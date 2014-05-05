@@ -61,11 +61,13 @@ public class StatusListAdapter extends ArrayAdapter<Status> {
 
     private static class UserIconTag {
         final ImageLoader.ImageContainer imageContainer;
-        final int position;
+        final long userId;
+        final String screenName;
 
-        public UserIconTag(ImageLoader.ImageContainer imageContainer, int position) {
+        public UserIconTag(ImageLoader.ImageContainer imageContainer, User user) {
             this.imageContainer = imageContainer;
-            this.position = position;
+            this.userId = user.getId();
+            this.screenName = user.getScreenName();
         }
     }
 
@@ -128,9 +130,7 @@ public class StatusListAdapter extends ArrayAdapter<Status> {
             @Override
             public void onClick(View view) {
                 UserIconTag tag = (UserIconTag) view.getTag();
-                Status status = getItem(tag.position);
-                Intent intent = UserStatusesActivity.createIntent(getContext(), status.getUser());
-                getContext().startActivity(intent);
+                getContext().startActivity(UserStatusesActivity.createIntent(getContext(), tag.userId, tag.screenName));
             }
         });
 
@@ -140,7 +140,7 @@ public class StatusListAdapter extends ArrayAdapter<Status> {
         }
         ImageLoader.ImageListener listener = ImageLoader.getImageListener(holder.userIcon, R.drawable.ic_launcher, android.R.drawable.ic_delete);
         ImageLoader.ImageContainer container = imageLoader.get(user.getBiggerProfileImageURLHttps(), listener);
-        holder.userIcon.setTag(new UserIconTag(container, position));
+        holder.userIcon.setTag(new UserIconTag(container, user));
 
         return convertView;
     }
