@@ -7,4 +7,6 @@
     <dimen name="status_button_height">25dp</dimen>
     <dimen name="status_button_width">80dp</dimen>
     <dimen name="status_button_text_size">12sp</dimen>
+    <dimen name="status_media_image_width">80dp</dimen>
+    <dimen name="status_media_image_height">80dp</dimen>
 </resources>

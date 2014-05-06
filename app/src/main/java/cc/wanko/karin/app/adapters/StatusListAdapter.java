@@ -3,6 +3,8 @@ package cc.wanko.karin.app.adapters;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.net.Uri;
 import android.text.method.LinkMovementMethod;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +17,7 @@ import android.widget.ToggleButton;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.ImageLoader;
+import com.android.volley.toolbox.NetworkImageView;
 import com.android.volley.toolbox.Volley;
 
 import java.text.SimpleDateFormat;
@@ -29,6 +32,7 @@ import cc.wanko.karin.app.utils.RoboViewHolder;
 import roboguice.inject.InjectView;
 import roboguice.util.Ln;
 import roboguice.util.RoboAsyncTask;
+import twitter4j.MediaEntity;
 import twitter4j.Status;
 import twitter4j.User;
 
@@ -45,6 +49,8 @@ public class StatusListAdapter extends ArrayAdapter<Status> {
         TextView createdAt;
         @InjectView(R.id.status_text)
         TextView statusText;
+        @InjectView(R.id.status_media_image)
+        NetworkImageView mediaImage;
         @InjectView(R.id.status_retweeter_area)
         LinearLayout retweeterArea;
         @InjectView(R.id.status_retweeter_name)
@@ -152,6 +158,8 @@ public class StatusListAdapter extends ArrayAdapter<Status> {
         ImageLoader.ImageContainer container = imageLoader.get(user.getBiggerProfileImageURLHttps(), listener);
         holder.userIcon.setTag(new UserIconTag(container, user));
 
+        setupMediaImage(holder.mediaImage, status);
+
         holder.favoriteButton.setChecked(status.isFavorited());
         holder.favoriteButton.setTag(new StatusButtonTag(position));
         holder.favoriteButton.setOnClickListener(new View.OnClickListener() {
@@ -239,6 +247,27 @@ public class StatusListAdapter extends ArrayAdapter<Status> {
     private static String formatDate(Date date) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         return sdf.format(date);
+    }
+
+    private void setupMediaImage(NetworkImageView imageView, Status status) {
+        MediaEntity[] entities = status.getMediaEntities();
+        if (entities.length == 0) {
+            setLayoutHeight(imageView, 0);
+            return;
+        } else {
+            setLayoutHeight(imageView, ViewGroup.LayoutParams.WRAP_CONTENT);
+        }
+
+        MediaEntity entity = entities[0];
+        final String url = entity.getMediaURLHttps();
+        imageView.setImageUrl(url, imageLoader);
+        imageView.setErrorImageResId(android.R.drawable.ic_delete);
+        imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getContext().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+            }
+        });
     }
 
     private void createFavorite(final ToggleButton button, final long statusId) {

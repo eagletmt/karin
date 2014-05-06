@@ -50,6 +50,13 @@
                 android:layout_height="wrap_content"
                 android:text="@string/status_text_placeholder" />
 
+            <com.android.volley.toolbox.NetworkImageView
+                android:id="@+id/status_media_image"
+                android:layout_width="@dimen/status_media_image_width"
+                android:layout_height="@dimen/status_media_image_height"
+                android:layout_gravity="center_horizontal"
+                android:src="@drawable/ic_launcher" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/status_button_height"
